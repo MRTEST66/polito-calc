@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة تقدم الوظائف والـ XP - بوليتو</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0414;
+            --card-bg: rgba(20, 10, 38, 0.85);
+            --card-border: rgba(168, 85, 247, 0.3);
+            --purple-primary: #a855f7;
+            --purple-light: #e9d5ff;
+            --purple-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #8b5cf6 100%);
+            --accent-pink: #ec4899;
+            --accent-green: #10b981;
+            --accent-red: #f43f5e;
+            --text-primary: #f8fafc;
+            --text-secondary: #c084fc;
+            --input-bg: rgba(15, 6, 28, 0.95);
+            --input-border: rgba(168, 85, 247, 0.35);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Tajawal', system-ui, sans-serif; 
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0414;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.35);
+            border-radius: 10px;
+            border: 2px solid #0a0414;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(168, 85, 247, 0.6);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 70%),
+                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.1) 0%, transparent 60%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--purple-gradient);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .header { text-align: center; margin-bottom: 28px; }
+        
+        .header h1 { 
+            font-size: 26px; 
+            font-weight: 900; 
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 6px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .header p { font-size: 13px; color: var(--text-secondary); margin: 0; font-weight: 500; }
+
+        .form-grid { display: flex; flex-direction: column; gap: 18px; }
+        .input-group { display: flex; flex-direction: column; gap: 7px; position: relative; }
+        label { font-size: 13px; font-weight: 700; color: var(--purple-light); letter-spacing: 0.3px; }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 16px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        input:focus {
+            border-color: var(--purple-primary);
+            box-shadow: 0 0 18px rgba(168, 85, 247, 0.35), inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+        }
+
+        .custom-select-trigger {
+            width: 100%;
+            padding: 13px 16px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .custom-select-trigger:after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid var(--purple-primary);
+            border-bottom: 2px solid var(--purple-primary);
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .custom-select-wrapper.open .custom-select-trigger {
+            border-color: var(--purple-primary);
+            box-shadow: 0 0 18px rgba(168, 85, 247, 0.35);
+        }
+
+        .custom-select-wrapper.open .custom-select-trigger:after {
+            transform: rotate(-135deg);
+        }
+
+        .custom-options {
+            position: absolute;
+            display: block;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #120624;
+            border: 1px solid var(--purple-primary);
+            border-radius: 14px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.95), 0 0 20px rgba(168, 85, 247, 0.2);
+            z-index: 100;
+            max-height: 230px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-8px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 6px;
+        }
+
+        .custom-select-wrapper.open .custom-options {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            padding: 11px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #e9d5ff;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .custom-option:hover {
+            background: rgba(168, 85, 247, 0.2);
+            color: #ffffff;
+            padding-right: 18px;
+        }
+
+        .custom-option.selected {
+            background: var(--purple-gradient);
+            color: #ffffff;
+            font-weight: 900;
+        }
+
+        .row-inputs { display: flex; gap: 14px; }
+        .row-inputs .input-group { flex: 1; }
+
+        .req-box {
+            background: rgba(168, 85, 247, 0.06);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .req-title { font-size: 13.5px; color: var(--text-secondary); font-weight: 700; }
+        .req-badge { font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 10px; }
+        
+        .req-badge.status-ok { 
+            background: rgba(16, 185, 129, 0.15); 
+            color: var(--accent-green); 
+            border: 1px solid rgba(16, 185, 129, 0.4); 
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+        }
+        
+        .req-badge.status-lock { 
+            background: rgba(244, 63, 94, 0.15); 
+            color: var(--accent-red); 
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            box-shadow: 0 0 12px rgba(244, 63, 94, 0.2);
+        }
+
+        button.btn-calc {
+            width: 100%;
+            padding: 15px;
+            background: var(--purple-gradient);
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 900;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 22px rgba(168, 85, 247, 0.4);
+        }
+
+        button.btn-calc:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(168, 85, 247, 0.6);
+        }
+
+        button.btn-calc:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 24px;
+            padding: 22px;
+            background: rgba(15, 6, 28, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 16px;
+            display: none;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.7);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 14.5px;
+        }
+
+        .result-row:last-child { border-bottom: none; }
+        .result-label { color: var(--text-secondary); font-weight: 600; }
+        
+        .result-val { 
+            font-weight: 800; 
+            color: var(--purple-light);
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+        
+        .result-val.money { 
+            color: var(--accent-green); 
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .metals-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .metal-card {
+            background: rgba(168, 85, 247, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .metal-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--purple-primary);
+            margin-bottom: 8px;
+        }
+
+        .rate-info {
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>حاسبة وظائف بوليتو</h1>
+        <p>احسب الكسب والـ XP المطلوب لكل مرحلة من مراحل الوظيفة</p>
+    </div>
+
+    <div class="form-grid">
+        <div class="row-inputs">
+            <div class="input-group">
+                <label>المستوى الحالي</label>
+                <input type="number" id="currentLevel" value="0" min="0" placeholder="0" oninput="updateReqStatus()">
+            </div>
+            <div class="input-group">
+                <label>المستوى المطلوب</label>
+                <input type="number" id="targetLevel" value="0" min="0" placeholder="0">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>اختر الوظيفة</label>
+            <div class="custom-select-wrapper" id="jobSelectWrapper">
+                <div class="custom-select-trigger" id="jobSelectTrigger">اختر الوظيفة</div>
+                <div class="custom-options" id="jobCustomOptions"></div>
+            </div>
+        </div>
+
+        <div class="req-box">
+            <span class="req-title">المستوى المطلوب للتوظيف:</span>
+            <span class="req-badge" id="reqBadge">مستوى 0</span>
+        </div>
+
+        <div class="input-group">
+            <label>مرحلة الوظيفة (1 - 30)</label>
+            <div class="custom-select-wrapper" id="stageSelectWrapper">
+                <div class="custom-select-trigger" id="stageSelectTrigger">المرحلة 5</div>
+                <div class="custom-options" id="stageCustomOptions"></div>
+            </div>
+        </div>
+
+        <button class="btn-calc" onclick="calculate()">احسب الآن</button>
+    </div>
+
+    <div class="results" id="results">
+        <div class="result-row">
+            <span class="result-label">المستويات المطلوبة:</span>
+            <span class="result-val" id="resLevels">0</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">إجمالي الـ XP المطلوب:</span>
+            <span class="result-val" id="resTotalXp">0</span>
+        </div>
+
+        <div id="standardResults">
+            <div class="result-row">
+                <span class="result-label">عدد الحبات / القطع المطلوبة:</span>
+                <span class="result-val" id="resItems">0</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">إجمالي الأرباح المتوقعة:</span>
+                <span class="result-val money" id="resMoney">$0</span>
+            </div>
+        </div>
+
+        <div id="metalsResults" style="display: none;">
+            <div style="font-size: 13.5px; font-weight: 800; color: var(--purple-light); margin-top: 12px;">تفاصيل المعادن (إذا اعتمدت على مادة واحدة):</div>
+            <div class="metals-grid" id="metalsGrid"></div>
+        </div>
+
+        <div class="rate-info" id="rateInfo">---</div>
+    </div>
+</div>
+
+<script>
+    const jobsConfig = {
+        "لوجستية": { reqLevel: 0, fullName: "بوليتو للخدمات اللوجستية", data: [ { stage: 5, money: 400, xp: 10 }, { stage: 10, money: 420, xp: 11 }, { stage: 15, money: 440, xp: 11 }, { stage: 20, money: 460, xp: 12 }, { stage: 25, money: 480, xp: 12 }, { stage: 30, money: 500, xp: 13 } ] },
+        "تاكسي": { reqLevel: 0, fullName: "تاكسي بوليتو", data: [ { stage: 5, money: 250, xp: 6 }, { stage: 10, money: 260, xp: 7 }, { stage: 15, money: 270, xp: 7 }, { stage: 20, money: 280, xp: 7 }, { stage: 25, money: 290, xp: 8 }, { stage: 30, money: 300, xp: 8 } ] },
+        "الزراعة": { reqLevel: 3, fullName: "الهيئة العامة للزراعة", data: [ { stage: 5, money: 280, xp: 7 }, { stage: 10, money: 290, xp: 8 }, { stage: 15, money: 300, xp: 8 }, { stage: 20, money: 310, xp: 8 }, { stage: 25, money: 320, xp: 9 }, { stage: 30, money: 330, xp: 9 } ] },
+        "أعناب": { reqLevel: 8, fullName: "شركة بوليتو للأعناب", data: [ { stage: 5, money: 300, xp: 8 }, { stage: 10, money: 310, xp: 8 }, { stage: 15, money: 320, xp: 8 }, { stage: 20, money: 330, xp: 9 }, { stage: 25, money: 340, xp: 9 }, { stage: 30, money: 350, xp: 9 } ] },
+        "مناحل": { reqLevel: 10, fullName: "شركة مناحل بن عوضة", data: [ { stage: 5, money: 330, xp: 7 }, { stage: 10, money: 340, xp: 8 }, { stage: 15, money: 350, xp: 8 }, { stage: 20, money: 375, xp: 8 }, { stage: 25, money: 385, xp: 9 }, { stage: 30, money: 400, xp: 9 } ] },
+        "الأقمشة": { reqLevel: 20, fullName: "شركة بوليتو للأقمشة", data: [ { stage: 5, money: 450, xp: 8 }, { stage: 10, money: 460, xp: 9 }, { stage: 15, money: 470, xp: 9 }, { stage: 20, money: 480, xp: 9 }, { stage: 25, money: 490, xp: 10 }, { stage: 30, money: 500, xp: 10 } ] },
+        "الدواجن": { reqLevel: 25, fullName: "شركة بوليتو للدواجن", data: [ { stage: 5, money: 320, xp: 8 }, { stage: 10, money: 340, xp: 9 }, { stage: 15, money: 360, xp: 9 }, { stage: 20, money: 380, xp: 10 }, { stage: 25, money: 400, xp: 11 }, { stage: 30, money: 420, xp: 11 } ] },
+        "الأسماك": { reqLevel: 35, fullName: "شركة بوليتو للأسماك", data: [ { stage: 5, money: 350, xp: 9 }, { stage: 10, money: 360, xp: 10 }, { stage: 15, money: 370, xp: 10 }, { stage: 20, money: 380, xp: 10 }, { stage: 25, money: 390, xp: 11 }, { stage: 30, money: 400, xp: 11 } ] },
+        "الأخشاب": { reqLevel: 45, fullName: "شركة بوليتو للأخشاب", data: [ { stage: 5, money: 350, xp: 9 }, { stage: 10, money: 370, xp: 10 }, { stage: 15, money: 390, xp: 10 }, { stage: 20, money: 410, xp: 10 }, { stage: 25, money: 430, xp: 11 }, { stage: 30, money: 450, xp: 11 } ] },
+        "الإسمنت": { reqLevel: 65, fullName: "شركة بوليتو للإسمنت", data: [ { stage: 5, money: 370, xp: 10 }, { stage: 10, money: 390, xp: 11 }, { stage: 15, money: 410, xp: 11 }, { stage: 20, money: 430, xp: 11 }, { stage: 25, money: 450, xp: 12 }, { stage: 30, money: 470, xp: 12 } ] },
+        "المراعي": { reqLevel: 75, fullName: "شركة المراعي للحليب", data: [ { stage: 5, money: 380, xp: 10 }, { stage: 10, money: 400, xp: 11 }, { stage: 15, money: 420, xp: 11 }, { stage: 20, money: 440, xp: 11 }, { stage: 25, money: 460, xp: 12 }, { stage: 30, money: 480, xp: 12 } ] },
+        "التمور": { reqLevel: 85, fullName: "مزرعة بوليتو للتمور", data: [ { stage: 5, money: 440, xp: 10 }, { stage: 10, money: 460, xp: 11 }, { stage: 15, money: 480, xp: 11 }, { stage: 20, money: 500, xp: 11 }, { stage: 25, money: 520, xp: 12 }, { stage: 30, money: 550, xp: 12 } ] },
+        "الغاز": { reqLevel: 100, fullName: "شركة غاز بوليتو", data: [ { stage: 5, money: 400, xp: 11 }, { stage: 10, money: 420, xp: 12 }, { stage: 15, money: 440, xp: 12 }, { stage: 20, money: 460, xp: 12 }, { stage: 25, money: 480, xp: 13 }, { stage: 30, money: 500, xp: 13 } ] },
+        "النفط": { reqLevel: 130, fullName: "شركة بوليتو للنفط", data: [ { stage: 5, money: 470, xp: 17 }, { stage: 10, money: 490, xp: 18 }, { stage: 15, money: 510, xp: 18 }, { stage: 20, money: 530, xp: 18 }, { stage: 25, money: 550, xp: 19 }, { stage: 30, money: 575, xp: 19 } ] },
+        "المعادن": { 
+            reqLevel: 150, 
+            fullName: "شركة بوليتو للمعادن", 
+            isMetals: true,
+            metals: {
+                "الحديد": { port: 9, airport: 14, xpPort: 11, xpAirport: 14, money: 380 },
+                "الذهب": { port: 9, airport: 15, xpPort: 14, xpAirport: 15, money: 450 },
+                "النحاس": { port: 8, airport: 13, xpPort: 10, xpAirport: 13, money: 360 },
+                "الألماس": { port: 30, airport: null, xpPort: 20, xpAirport: null, money: 600 }
+            }
+        },
+        "اللحوم": { reqLevel: 200, fullName: "بريسكت بوليتو للحوم", data: [ { stage: 5, money: 420, xp: 15 }, { stage: 10, money: 440, xp: 16 }, { stage: 15, money: 460, xp: 16 }, { stage: 20, money: 480, xp: 16 }, { stage: 25, money: 500, xp: 17 }, { stage: 30, money: 520, xp: 17 } ] },
+        "الفضاء": { reqLevel: 400, fullName: "وكالة بوليتو للفضاء", data: [ { stage: 5, money: 510, xp: 19 }, { stage: 10, money: 550, xp: 20 }, { stage: 15, money: 585, xp: 21 }, { stage: 20, money: 620, xp: 22 }, { stage: 25, money: 655, xp: 23 }, { stage: 30, money: 700, xp: 24 } ] }
+    };
+
+    const fullJobsData = {};
+    let selectedJobKey = "الإسمنت";
+    let selectedStageVal = 5;
+
+    function initData() {
+        for (let jobName in jobsConfig) {
+            if (jobsConfig[jobName].isMetals) continue;
+            fullJobsData[jobName] = {};
+            const milestones = jobsConfig[jobName].data;
+            const msMap = {};
+            milestones.forEach(m => msMap[m.stage] = m);
+
+            for (let s = 1; s <= 30; s++) {
+                if (s <= 5) {
+                    let startMoney = Math.round(msMap[5].money * 0.85);
+                    let moneyVal = Math.round(startMoney + ((s - 1) / 4) * (msMap[5].money - startMoney));
+                    fullJobsData[jobName][s] = { money: moneyVal, xp: msMap[5].xp };
+                } else if (s >= 30) {
+                    fullJobsData[jobName][s] = { money: msMap[30].money, xp: msMap[30].xp };
+                } else {
+                    if (msMap[s]) {
+                        fullJobsData[jobName][s] = { money: msMap[s].money, xp: msMap[s].xp };
+                    } else {
+                        let lowerStage = 5;
+                        if (s > 25) lowerStage = 25;
+                        else if (s > 20) lowerStage = 20;
+                        else if (s > 15) lowerStage = 15;
+                        else if (s > 10) lowerStage = 10;
+
+                        let upperStage = lowerStage + 5;
+                        let low = msMap[lowerStage];
+                        let high = msMap[upperStage];
+
+                        let ratio = (s - lowerStage) / 5;
+                        let moneyVal = Math.round(low.money + ratio * (high.money - low.money));
+                        let xpVal = Math.round(low.xp + ratio * (high.xp - low.xp));
+
+                        fullJobsData[jobName][s] = { money: moneyVal, xp: xpVal };
+                    }
+                }
+            }
+        }
+    }
+
+    function calculateTotalXp(startLvl, endLvl) {
+        let total = 0;
+        for (let l = startLvl; l < endLvl; l++) {
+            let currentXpReq = 22400 + Math.floor((l - 70) * 150); 
+            if (currentXpReq < 15000) currentXpReq = 22400;
+            total += currentXpReq;
+        }
+        return total;
+    }
+
+    function updateReqStatus() {
+        const curLvl = parseInt(document.getElementById('currentLevel').value) || 0;
+        const reqLvl = jobsConfig[selectedJobKey].reqLevel;
+        const reqBadge = document.getElementById('reqBadge');
+
+        if (curLvl >= reqLvl) {
+            reqBadge.className = 'req-badge status-ok';
+            reqBadge.innerText = `مستوى ${reqLvl} (متاح لك ✅)`;
+        } else {
+            reqBadge.className = 'req-badge status-lock';
+            reqBadge.innerText = `مستوى ${reqLvl} (مغلق 🔒)`;
+        }
+    }
+
+    function setupCustomDropdowns() {
+        const jobWrapper = document.getElementById('jobSelectWrapper');
+        const jobTrigger = document.getElementById('jobSelectTrigger');
+        const jobOptionsContainer = document.getElementById('jobCustomOptions');
+
+        jobOptionsContainer.innerHTML = '';
+        for (let j in jobsConfig) {
+            let opt = document.createElement('div');
+            opt.className = `custom-option ${j === selectedJobKey ? 'selected' : ''}`;
+            opt.innerText = `${j} (${jobsConfig[j].fullName})`;
+            opt.onclick = function(e) {
+                e.stopPropagation();
+                selectedJobKey = j;
+                jobTrigger.innerText = `${j} (${jobsConfig[j].fullName})`;
+                
+                document.querySelectorAll('#jobCustomOptions .custom-option').forEach(el => el.classList.remove('selected'));
+                opt.classList.add('selected');
+                jobWrapper.classList.remove('open');
+                updateReqStatus();
+            };
+            jobOptionsContainer.appendChild(opt);
+        }
+        jobTrigger.innerText = `${selectedJobKey} (${jobsConfig[selectedJobKey].fullName})`;
+
+        jobTrigger.onclick = function(e) {
+            e.stopPropagation();
+            document.getElementById('stageSelectWrapper').classList.remove('open');
+            jobWrapper.classList.toggle('open');
+        };
+
+        const stageWrapper = document.getElementById('stageSelectWrapper');
+        const stageTrigger = document.getElementById('stageSelectTrigger');
+        const stageOptionsContainer = document.getElementById('stageCustomOptions');
+
+        stageOptionsContainer.innerHTML = '';
+        for (let s = 1; s <= 30; s++) {
+            let opt = document.createElement('div');
+            opt.className = `custom-option ${s === selectedStageVal ? 'selected' : ''}`;
+            opt.innerText = `المرحلة ${s}`;
+            opt.onclick = function(e) {
+                e.stopPropagation();
+                selectedStageVal = s;
+                stageTrigger.innerText = `المرحلة ${s}`;
+                
+                document.querySelectorAll('#stageCustomOptions .custom-option').forEach(el => el.classList.remove('selected'));
+                opt.classList.add('selected');
+                stageWrapper.classList.remove('open');
+            };
+            stageOptionsContainer.appendChild(opt);
+        }
+
+        stageTrigger.onclick = function(e) {
+            e.stopPropagation();
+            jobWrapper.classList.remove('open');
+            stageWrapper.classList.toggle('open');
+        };
+
+        document.addEventListener('click', function() {
+            jobWrapper.classList.remove('open');
+            stageWrapper.classList.remove('open');
+        });
+    }
+
+    function initUI() {
+        initData();
+        setupCustomDropdowns();
+        updateReqStatus();
+    }
+
+    function calculate() {
+        const curLvl = parseInt(document.getElementById('currentLevel').value) || 0;
+        const tgtLvl = parseInt(document.getElementById('targetLevel').value) || 0;
+
+        if (tgtLvl <= curLvl) {
+            alert('يرجى إدخال مستوى مطلوب أعلى من المستوى الحالي');
+            return;
+        }
+
+        const levelsNeeded = tgtLvl - curLvl;
+        const totalXp = calculateTotalXp(curLvl, tgtLvl);
+
+        const jobInfo = jobsConfig[selectedJobKey];
+        const stage = selectedStageVal;
+
+        document.getElementById('resLevels').innerText = levelsNeeded.toLocaleString();
+        document.getElementById('resTotalXp').innerText = totalXp.toLocaleString() + " XP";
+
+        const stdResults = document.getElementById('standardResults');
+        const metalsResults = document.getElementById('metalsResults');
+
+        if (jobInfo.isMetals) {
+            stdResults.style.display = 'none';
+            metalsResults.style.display = 'block';
+
+            const metalsGrid = document.getElementById('metalsGrid');
+            metalsGrid.innerHTML = '';
+
+            for (let mName in jobInfo.metals) {
+                let m = jobInfo.metals[mName];
+                let card = document.createElement('div');
+                card.className = 'metal-card';
+
+                let itemsPort = Math.ceil(totalXp / m.xpPort);
+                let moneyPort = itemsPort * m.money;
+
+                let airportText = '';
+                if (m.xpAirport) {
+                    let itemsAirport = Math.ceil(totalXp / m.xpAirport);
+                    let moneyAirport = itemsAirport * m.money;
+                    airportText = `<br>✈️ <b>المطار (XP ${m.xpAirport}):</b> ${itemsAirport.toLocaleString()} قطعة | $${moneyAirport.toLocaleString()}`;
+                }
+
+                card.innerHTML = `
+                    <div class="metal-title">${mName}</div>
+                    <div style="font-size: 13.5px; color: var(--text-primary);">
+                        🚢 <b>الميناء (XP ${m.xpPort}):</b> ${itemsPort.toLocaleString()} قطعة | <span style="color: var(--accent-green); font-weight: 800;">$${moneyPort.toLocaleString()}</span>
+                        ${airportText}
+                    </div>
+                `;
+                metalsGrid.appendChild(card);
+            }
+
+            document.getElementById('rateInfo').innerText = `وظيفة شركة المعادن (ملاحظة: تختلف نسبة الكسب و الـ XP حسب الميناء والمطار ونوع المعدن)`;
+        } else {
+            stdResults.style.display = 'block';
+            metalsResults.style.display = 'none';
+
+            const stageData = fullJobsData[selectedJobKey][stage];
+            const xpPerItem = stageData.xp;
+            const itemsNeeded = Math.ceil(totalXp / xpPerItem);
+            const totalMoney = itemsNeeded * stageData.money;
+
+            document.getElementById('resItems').innerText = itemsNeeded.toLocaleString() + " حبة";
+            document.getElementById('resMoney').innerText = "$" + totalMoney.toLocaleString();
+            document.getElementById('rateInfo').innerText = `المرحلة ${stage}: الحبة الواحدة تمنح ${xpPerItem} XP وتكسبك $${stageData.money}`;
+        }
+
+        document.getElementById('results').style.display = 'block';
+    }
+
+    window.onload = initUI;
+</script>
+
+</body>
+</html>
